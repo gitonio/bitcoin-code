@@ -7,7 +7,7 @@ import unittest
 import random
 import re
 import struct
-
+import codecs
 import utils
 
 # https://en.bitcoin.it/wiki/Wallet_import_format
@@ -32,9 +32,11 @@ def derSigToHexSig(s):
 
 # Input is hex string
 def privateKeyToPublicKey(s):
-    sk = ecdsa.SigningKey.from_string(s.decode('hex'), curve=ecdsa.SECP256k1)
+    #sk = ecdsa.SigningKey.from_string(s.decode('hex'), curve=ecdsa.SECP256k1)
+    sk = ecdsa.SigningKey.from_string(codecs.decode(s.encode("utf-8"), "hex"), curve=ecdsa.SECP256k1)
     vk = sk.verifying_key
-    return ('\04' + sk.verifying_key.to_string()).encode('hex')
+    #return ('\04' + sk.verifying_key.to_string()).encode('hex')
+    return (b'\04' + sk.verifying_key.to_string())
 
 # Input is hex string
 def keyToAddr(s):
@@ -42,8 +44,10 @@ def keyToAddr(s):
 
 def pubKeyToAddr(s):
     ripemd160 = hashlib.new('ripemd160')
-    ripemd160.update(hashlib.sha256(s.decode('hex')).digest())
-    return utils.base58CheckEncode(0, ripemd160.digest())
+    ripemd160.update(hashlib.sha256(s).digest())
+    #ripemd160.update(hashlib.sha256(s).digest())
+    return utils.base58CheckEncode(0, ripemd160.hexdigest())    
+    #return utils.base58CheckEncode(b'\0', ripemd160.digest())
 
 def addrHashToScriptPubKey(b58str):
     assert(len(b58str) == 34)

@@ -89,7 +89,7 @@ def countLeadingChars(s, ch):
 # https://en.bitcoin.it/wiki/Base58Check_encoding
 def base58CheckEncode(version, payload):
     payload = codecs.decode(payload.encode("utf-8"),'hex')
-    versionb = b'\x80'
+    versionb = bytes([version])
     s = versionb + payload
     checksum = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
     result = s + checksum
