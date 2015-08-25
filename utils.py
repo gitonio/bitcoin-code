@@ -53,7 +53,7 @@ def base58encode(n):
     result = ''
     while n > 0:
         result = b58[n%58] + result
-        n /= 58
+        n //= 58
     return result
 
 def base58decode(s):
@@ -66,7 +66,7 @@ def base256encode(n):
     result = ''
     while n > 0:
         result = chr(n % 256) + result
-        n /= 256
+        n //= 256
     return result
 
 def base256decode(s):
