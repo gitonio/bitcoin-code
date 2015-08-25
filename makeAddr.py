@@ -77,3 +77,20 @@ print ('Addr: ' , keyUtils.keyToAddr(private_key))
 
 print (keyUtils.keyToAddr(private_key))
 
+
+#Wif to private key
+wif = '5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ'
+print('1 - Take a Wallet Import Format string')
+print(wif)
+print('2 - Convert it to a byte string using Base58Check encoding')
+leadingOnes = utils.countLeadingChars(s, '1')
+s = utils.base256encode(utils.base58decode(wif))
+print(s)
+print(s.encode())
+result = '\0' * leadingOnes + s[:-4]
+chk = s[-4:]
+checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).digest()[0:4]
+#assert(chk == checksum)
+version = result[0]
+print(result[1:].encode())
+#keyUtils.wifToPrivateKey(wif)
