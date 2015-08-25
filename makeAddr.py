@@ -35,7 +35,7 @@ print(utils.base256decode( result ))
 print ( utils.base58encode(utils.base256decode( result )))
 
 
-print ('Wif:', keyUtils.privateKeyToWif(private_key))
+print ('Wif:', keyUtils.privateKeyToWif( private_key))
 #https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
 
 print('0 - Private ECDSA Key')
@@ -86,11 +86,12 @@ print('2 - Convert it to a byte string using Base58Check encoding')
 leadingOnes = utils.countLeadingChars(s, '1')
 s = utils.base256encode(utils.base58decode(wif))
 print(s)
-print(s.encode())
+print(s.encode(encoding='utf-8'))
 result = '\0' * leadingOnes + s[:-4]
 chk = s[-4:]
-checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).digest()[0:4]
+checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).hexdigest()[0:4]
+print(checksum)
 #assert(chk == checksum)
 version = result[0]
 print(result[1:].encode())
-#keyUtils.wifToPrivateKey(wif)
+keyUtils.wifToPrivateKey(wif)
