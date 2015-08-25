@@ -12,7 +12,8 @@ import utils
 
 # https://en.bitcoin.it/wiki/Wallet_import_format
 def privateKeyToWif(key_hex):    
-    return utils.base58CheckEncode(0x80, key_hex.decode('hex'))
+    #return utils.base58CheckEncode(0x80, key_hex.decode('hex'))
+    return utils.base58CheckEncode(0x80, key_hex)
 
 def wifToPrivateKey(s):
     b = utils.base58CheckDecode(s)

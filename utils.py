@@ -1,6 +1,7 @@
 import hashlib
 import struct
 import unittest
+import codecs
 
 b58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -72,7 +73,8 @@ def base256encode(n):
 def base256decode(s):
     result = 0
     for c in s:
-        result = result * 256 + ord(c)
+        #result = result * 256 + ord(c)
+        result = result * 256 +    c
     return result
 
 def countLeadingChars(s, ch):
@@ -86,7 +88,9 @@ def countLeadingChars(s, ch):
 
 # https://en.bitcoin.it/wiki/Base58Check_encoding
 def base58CheckEncode(version, payload):
-    s = chr(version) + payload
+    payload = codecs.decode(payload.encode("utf-8"),'hex')
+    versionb = b'\x80'
+    s = versionb + payload
     checksum = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
     result = s + checksum
     leadingZeros = countLeadingChars(result, '\0')
