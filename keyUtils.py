@@ -23,7 +23,7 @@ def wifToPrivateKey(s):
 def derSigToHexSig(s):
     s, junk = ecdsa.der.remove_sequence(s.decode('hex'))
     if junk != '':
-        print 'JUNK', junk.encode('hex')
+        print ('JUNK', junk.encode('hex'))
     assert(junk == '')
     x, s = ecdsa.der.remove_integer(s)
     y, s = ecdsa.der.remove_integer(s)
