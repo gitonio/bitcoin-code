@@ -85,7 +85,7 @@ print(wif)
 print('2 - Convert it to a byte string using Base58Check encoding')
 leadingOnes = utils.countLeadingChars(s, '1')
 s = utils.base256encode(utils.base58decode(wif))
-print(s)
+#print(s)
 print(s.encode(encoding='utf-8'))
 result = '\0' * leadingOnes + s[:-4]
 chk = s[-4:]
@@ -94,4 +94,4 @@ print(checksum)
 #assert(chk == checksum)
 version = result[0]
 print(result[1:].encode())
-keyUtils.wifToPrivateKey(wif)
+#print(keyUtils.wifToPrivateKey(wif))

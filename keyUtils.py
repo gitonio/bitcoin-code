@@ -17,7 +17,7 @@ def privateKeyToWif(key_hex):
 
 def wifToPrivateKey(s):
     b = utils.base58CheckDecode(s)
-    return b.encode('hex')
+    return b
 
 # Input is a hex-encoded, DER-encoded signature
 # Output is a 64-byte hex-encoded signature

@@ -93,9 +93,10 @@ def base58CheckEncode(version, payload):
     versionb = bytes([version])
     s = versionb + payloadb
     checksumb = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
-    checksum = hashlib.sha256(hashlib.sha256(s).digest()).hexdigest()[0:8]
+    checksum = hashlib.sha256(hashlib.sha256(s).digest()).hexdigest()[0:4]
     result = chr(version) + payload + checksum
     resultb = s + checksumb
+    #resultb = codecs.encode(resultb,'hex')
     leadingZeros = countLeadingChars(result, '\0')
     return '1' * leadingZeros + base58encode(base256decode(resultb))
 
