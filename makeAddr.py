@@ -97,4 +97,4 @@ print(checksum)
 version = result[0]
 print(result[1:])
 
-#print(keyUtils.wifToPrivateKey(wif))
+print(keyUtils.wifToPrivateKey(wif))
