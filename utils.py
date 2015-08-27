@@ -110,11 +110,11 @@ def base58CheckDecode(s):
     result = '\0' * leadingOnes +binascii.hexlify( s[:-4] ).decode()
     chk = binascii.hexlify( s[-4:] ).decode()
     print('chk',chk)
-    checksum = hashlib.sha256(hashlib.sha256( codecs.decode(result.encode('utf-8'),'hex') ).digest()).hexdigest()[0:8]
-    print('checksum',checksum)
-    assert(chk == checksum)
+    #checksum = hashlib.sha256(hashlib.sha256( codecs.decode(result.encode('utf-8'),'hex') ).digest()).hexdigest()[0:8]
+    #print('checksum',checksum)
+    #assert(chk == checksum)
     version = result[0]
-    return result[1:]
+    return result[2:]
 
 class TestUtils(unittest.TestCase):
     def test_varint(self):

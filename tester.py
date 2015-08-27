@@ -1,4 +1,4 @@
-import utils,codecs, struct,hashlib, base58,keyUtils, binascii
+import utils,codecs, struct,hashlib, base58,keyUtils, binascii, ecdsa
 print("abcdef",type("abcdef"))
 print(                            "abcdef".encode("utf-8"),   type("abcdef".encode("utf-8")))
 print(              codecs.decode("abcdef".encode("utf-8"), "hex"), )
@@ -8,7 +8,28 @@ print(              codecs.decode("abcdef".encode("utf-8"), "hex") )
 print(              str(codecs.decode("abcdef".encode("utf-8"), "hex") )[1:] )
 print(              str(codecs.decode("abcdef".encode("utf-8"), "hex") ) )
 print(binascii.hexlify( codecs.decode("abcdef".encode("utf-8"), "hex") ).decode())
- 
+
+mystring = "e299a5205765204d616b652054756d6d792048617070792120e299a5"
+print( codecs.decode(mystring.encode('utf-8'),'hex'))
+
+x= ecdsa.der.encode_sequence(
+            ecdsa.der.encode_integer(0x123456),
+            ecdsa.der.encode_integer(0x89abcd))
+#                         "300b020312345602040089abcd")
+print('typex:',type(x)) 
+print(binascii.hexlify(x).decode())
+
+derSig = "304502204c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093022100faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"
+derSig = binascii.unhexlify(derSig)
+print(derSig)
+s, junk = ecdsa.der.remove_sequence(derSig)
+print('typex',type(junk))
+print(binascii.hexlify(junk))
+derSig = "304502204c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093022100faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"
+keyUtils.derSigToHexSig(derSig)
+
+
+
 
 print(utils.base256encode(0x4142))
 print(type(utils.base256encode(0x4142)))

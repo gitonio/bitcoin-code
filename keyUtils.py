@@ -9,7 +9,7 @@ import re
 import struct
 import codecs
 import utils
-
+import binascii
 # https://en.bitcoin.it/wiki/Wallet_import_format
 def privateKeyToWif(key_hex):    
     #return utils.base58CheckEncode(0x80, key_hex.decode('hex'))
@@ -22,10 +22,14 @@ def wifToPrivateKey(s):
 # Input is a hex-encoded, DER-encoded signature
 # Output is a 64-byte hex-encoded signature
 def derSigToHexSig(s):
-    s, junk = ecdsa.der.remove_sequence(s.decode('hex'))
+    s = binascii.unhexlify(s)
+
+    #s, junk = ecdsa.der.remove_sequence(s.decode('hex'))
+    s, junk = ecdsa.der.remove_sequence(s)
     if junk != '':
-        print ('JUNK', junk.encode('hex'))
-    assert(junk == '')
+        #print ('JUNK', junk.encode('hex'))
+        print ('JUNK', binascii.hexlify(junk))
+    assert(junk == b'')
     x, s = ecdsa.der.remove_integer(s)
     y, s = ecdsa.der.remove_integer(s)
     return '%064x%064x' % (x, y)
@@ -52,7 +56,8 @@ def pubKeyToAddr(s):
 def addrHashToScriptPubKey(b58str):
     assert(len(b58str) == 34)
     # 76     A9      14 (20 bytes)                                 88             AC
-    return '76a914' + utils.base58CheckDecode(b58str).encode('hex') + '88ac'
+    #return '76a914' + utils.base58CheckDecode(b58str).encode('hex') + '88ac'
+    return '76a914' + utils.base58CheckDecode(b58str)  + '88ac'
 
     
 class TestKey(unittest.TestCase):
@@ -101,8 +106,8 @@ class TestKey(unittest.TestCase):
     def test_der(self):
         self.assertEqual(ecdsa.der.encode_sequence(
             ecdsa.der.encode_integer(0x123456),
-            ecdsa.der.encode_integer(0x89abcd)).encode('hex'),
-                         "300b020312345602040089abcd")
+            ecdsa.der.encode_integer(0x89abcd)),
+                         b"300b020312345602040089abcd")
     def test_derSigToHexSig(self):
         derSig = "304502204c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093022100faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"
         self.assertEqual("4c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae",
