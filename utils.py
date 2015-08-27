@@ -2,6 +2,7 @@ import hashlib
 import struct
 import unittest
 import codecs
+import binascii
 
 b58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -64,9 +65,11 @@ def base58decode(s):
     return result
 
 def base256encode(n):
-    result = ''
+    #result = ''
+    result=bytes()
     while n > 0:
-        result = chr(n % 256) + result
+        #result = chr(n % 256) + result
+        result = bytes((n % 256,)) + result
         n //= 256
     return result
 
@@ -89,7 +92,7 @@ def countLeadingChars(s, ch):
 # https://en.bitcoin.it/wiki/Base58Check_encoding
 def base58CheckEncode(version, payload):
     payloadb = payload.encode("utf-8")
-    payloadb = bytes(payload, 'utf-8')
+    payloadb = codecs.decode(bytes(payload, 'utf-8'),'hex')
     versionb = bytes([version])
     s = versionb + payloadb
     checksumb = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
@@ -103,10 +106,10 @@ def base58CheckEncode(version, payload):
 def base58CheckDecode(s):
     leadingOnes = countLeadingChars(s, '1')
     s = base256encode(base58decode(s))
-    result = '\0' * leadingOnes + s[:-4]
+    result = '\0' * leadingOnes +binascii.hexlify( s[:-4] ).decode()
     chk = s[-4:]
     checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).digest()[0:4]
-    #assert(chk == checksum)
+    assert(chk == checksum)
     version = result[0]
     return result[1:]
 
@@ -132,8 +135,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(countLeadingChars('1a\0bcd\0', '1'), 1)
 
     def test_base256(self):
-        self.assertEqual(base256encode(base256decode(b'abc')), 'abc')
-        self.assertEqual(base256encode(0x4142), 'AB')
+        self.assertEqual(base256encode(base256decode(b'abc')), b'abc')
+        self.assertEqual(base256encode(0x4142), b'AB')
         self.assertEqual(base256decode(b'AB'), 0x4142)
 
     def test_base58(self):
@@ -143,7 +146,7 @@ class TestUtils(unittest.TestCase):
             0x800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D)
 
     def test_base58check(self):
-        self.assertEqual(base58CheckDecode(base58CheckEncode(42, 'abcd')), 'abcd')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(42, 'abc')), 'abc')
         self.assertEqual(base58CheckDecode(base58CheckEncode(0, '\0\0abc')), '\0\0abc')
         s = base256encode(0x0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D)
         b = base58CheckEncode(0x80, s)

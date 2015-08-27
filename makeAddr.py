@@ -1,4 +1,4 @@
-import random, keyUtils, codecs, hashlib, utils
+import random, keyUtils, codecs, hashlib, utils, binascii
 
 #private_key = ''.join(['%x' % random.randrange(16) for x in range(0, 64)])
 private_key = '0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D'
@@ -85,13 +85,16 @@ print(wif)
 print('2 - Convert it to a byte string using Base58Check encoding')
 leadingOnes = utils.countLeadingChars(s, '1')
 s = utils.base256encode(utils.base58decode(wif))
-#print(s)
-print(s.encode(encoding='utf-8'))
-result = '\0' * leadingOnes + s[:-4]
+print(type(s))
+print(utils.base58decode(wif))
+#print(s.encode(encoding='utf-8'))
+#print(binascii.hexlify(s.encode(encoding='utf-8')).decode())
+result = '\0' * leadingOnes + binascii.hexlify( s[:-4] ).decode()
 chk = s[-4:]
-checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).hexdigest()[0:4]
+checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).hexdigest()[0:8]
 print(checksum)
 #assert(chk == checksum)
 version = result[0]
-print(result[1:].encode())
+print(result[1:])
+
 #print(keyUtils.wifToPrivateKey(wif))
