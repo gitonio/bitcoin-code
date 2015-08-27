@@ -1,13 +1,14 @@
 import utils,codecs, struct,hashlib, base58,keyUtils, binascii
-# print("abcdef",type("abcdef"))
-# print(                            "abcdef".encode("utf-8"),   type("abcdef".encode("utf-8")))
-# print(              codecs.decode("abcdef".encode("utf-8"), "hex"), )
-# print(codecs.encode(codecs.decode("abcdef".encode("utf-8"), "hex"), "hex"))
-# print(codecs.encode(codecs.decode("abcdef".encode("utf-8"), "hex"), "hex").decode())
-# print(              codecs.decode("abcdef".encode("utf-8"), "hex") )
-# print(              str(codecs.decode("abcdef".encode("utf-8"), "hex") )[1:] )
-# print(              str(codecs.decode("abcdef".encode("utf-8"), "hex") ) )
-# 
+print("abcdef",type("abcdef"))
+print(                            "abcdef".encode("utf-8"),   type("abcdef".encode("utf-8")))
+print(              codecs.decode("abcdef".encode("utf-8"), "hex"), )
+print(codecs.encode(codecs.decode("abcdef".encode("utf-8"), "hex"), "hex"))
+print(codecs.encode(codecs.decode("abcdef".encode("utf-8"), "hex"), "hex").decode())
+print(              codecs.decode("abcdef".encode("utf-8"), "hex") )
+print(              str(codecs.decode("abcdef".encode("utf-8"), "hex") )[1:] )
+print(              str(codecs.decode("abcdef".encode("utf-8"), "hex") ) )
+print(binascii.hexlify( codecs.decode("abcdef".encode("utf-8"), "hex") ).decode())
+ 
 
 print(utils.base256encode(0x4142))
 print(type(utils.base256encode(0x4142)))
@@ -16,7 +17,8 @@ print(utils.base256encode(16706))
 print('abc:', utils.base58CheckEncode(42, 'AB'))
 #print('abc:', utils.base58CheckEncode(42, utils.base256encode(0x4142)))
 #print('AB:', utils.base58CheckEncode(0, 'AB'))
-# print(utils.base58CheckDecode(utils.base58CheckEncode(42, 'abc')))
+print(utils.base58CheckDecode(utils.base58CheckEncode(42, 'abce')))
+print(utils.base58CheckDecode(utils.base58CheckEncode(42, '0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D')))
 # print(utils.base58CheckEncode( 0, '\0\0abc'))
 # print(utils.base58CheckDecode(utils.base58CheckEncode(0, '\0\0abc')))
 hexstring = '800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D'

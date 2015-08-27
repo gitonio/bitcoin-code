@@ -93,6 +93,7 @@ def countLeadingChars(s, ch):
 def base58CheckEncode(version, payload):
     payloadb = payload.encode("utf-8")
     payloadb = codecs.decode(bytes(payload, 'utf-8'),'hex')
+    #payloadb = binascii.hexlify( payload.encode("utf-8") )
     versionb = bytes([version])
     s = versionb + payloadb
     checksumb = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
@@ -148,8 +149,8 @@ class TestUtils(unittest.TestCase):
             0x800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D)
 
     def test_base58check(self):
-        self.assertEqual(base58CheckDecode(base58CheckEncode(42, 'abc')), 'abc')
-        self.assertEqual(base58CheckDecode(base58CheckEncode(0, '\0\0abc')), '\0\0abc')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(42, 'abcd')), 'aabcd')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(0, '\0\0abcd')), '\0\0abcd')
         s = base256encode(0x0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D)
         b = base58CheckEncode(0x80, s)
         self.assertEqual(b, "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")
