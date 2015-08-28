@@ -6,6 +6,8 @@ import binascii
 
 privateKey = keyUtils.wifToPrivateKey("5HusYj2b2x4nroApgfvaSfKYZhRbKFH41bVyPooymbC6KfgSXdD") #1MMMM
 
+#print(codecs.decode('00caecf01d74102a28aed6a64dcf1cf7b0e41c4dd6c62f70f46febdc32514f0bd'.encode('utf-8'),'hex'))
+
 utils.base58CheckDecode('1MMMMSUb1piy2ufrSguNUdFmAcvqrQF8M5')
 print(type(utils.base58CheckDecode('1MMMMSUb1piy2ufrSguNUdFmAcvqrQF8M5'))) 
 #print(binascii.unhexlify((utils.base58CheckDecode('1MMMMSUb1piy2ufrSguNUdFmAcvqrQF8M5')))) 

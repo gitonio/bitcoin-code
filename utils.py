@@ -107,9 +107,10 @@ def base58CheckEncode(version, payload):
 def base58CheckDecode(s):
     leadingOnes = countLeadingChars(s, '1')
     s = base256encode(base58decode(s))
+    print('s',s)
     result = '\0' * leadingOnes +binascii.hexlify( s[:-4] ).decode()
     chk = binascii.hexlify( s[-4:] ).decode()
-    print('chk',chk)
+    #print('chk',chk)
     #checksum = hashlib.sha256(hashlib.sha256( codecs.decode(result.encode('utf-8'),'hex') ).digest()).hexdigest()[0:8]
     #print('checksum',checksum)
     #assert(chk == checksum)

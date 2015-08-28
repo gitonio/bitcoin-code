@@ -70,9 +70,11 @@ def verifyTxnSignature(txn):
 def makeSignedTransaction(privateKey, outputTransactionHash, sourceIndex, scriptPubKey, outputs):
     myTxn_forSig = (makeRawTransaction(outputTransactionHash, sourceIndex, scriptPubKey, outputs)
          + "01000000") # hash code
-
-    s256 = hashlib.sha256(hashlib.sha256(myTxn_forSig.decode('hex')).digest()).digest()
-    sk = ecdsa.SigningKey.from_string(privateKey.decode('hex'), curve=ecdsa.SECP256k1)
+    myTxn_forSig = codecs.decode(myTxn_forSig.encode('utf-8'),'hex')
+    s256 = hashlib.sha256(hashlib.sha256(myTxn_forSig).digest()).digest()
+    print('pk',privateKey)
+    privateKey = codecs.decode(privateKey.encode('utf-8'),'hex')
+    sk = ecdsa.SigningKey.from_string(privateKey, curve=ecdsa.SECP256k1)
     sig = sk.sign_digest(s256, sigencode=ecdsa.util.sigencode_der) + '\01' # 01 is hashtype
     pubKey = keyUtils.privateKeyToPublicKey(privateKey)
     scriptSig = utils.varstr(sig).encode('hex') + utils.varstr(pubKey.decode('hex')).encode('hex')
