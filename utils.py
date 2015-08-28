@@ -114,7 +114,7 @@ def base58CheckDecode(s):
     #print('checksum',checksum)
     #assert(chk == checksum)
     version = result[0]
-    return result[2:]
+    return result[1:]
 
 class TestUtils(unittest.TestCase):
     def test_varint(self):

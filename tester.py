@@ -27,9 +27,8 @@ print('typex',type(junk))
 print(binascii.hexlify(junk))
 derSig = "304502204c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093022100faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"
 keyUtils.derSigToHexSig(derSig)
-
-
-
+print('script',keyUtils.addrHashToScriptPubKey("1MMMMSUb1piy2ufrSguNUdFmAcvqrQF8M5"))
+print( keyUtils.addrHashToScriptPubKey("1KKKK6N21XKo48zWKuQKXdvSsCf95ibHFa"))
 
 print(utils.base256encode(0x4142))
 print(type(utils.base256encode(0x4142)))
