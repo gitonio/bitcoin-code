@@ -17,7 +17,7 @@ def privateKeyToWif(key_hex):
 
 def wifToPrivateKey(s):
     b = utils.base58CheckDecode(s)
-    return b
+    return b[1:]
 
 # Input is a hex-encoded, DER-encoded signature
 # Output is a 64-byte hex-encoded signature
@@ -48,7 +48,7 @@ def keyToAddr(s):
 
 def pubKeyToAddr(s):
     ripemd160 = hashlib.new('ripemd160')
-    ripemd160.update(hashlib.sha256(s).digest())
+    ripemd160.update(  hashlib.sha256(codecs.decode(s.encode('utf-8'),'hex')).digest())
     #ripemd160.update(hashlib.sha256(s).digest())
     return utils.base58CheckEncode(0, ripemd160.hexdigest())    
     #return utils.base58CheckEncode(b'\0', ripemd160.digest())

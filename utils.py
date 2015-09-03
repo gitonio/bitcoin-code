@@ -8,18 +8,20 @@ b58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 # Returns byte string value, not hex string
 def varint(n):
+    #253
     if n < 0xfd:
         return struct.pack('<B', n)
     elif n < 0xffff:
-        return struct.pack('<cH', '\xfd', n)
+        return struct.pack('<cH', b'\xfd', n)
     elif n < 0xffffffff:
-        return struct.pack('<cL', '\xfe', n)
+        return struct.pack('<cL', b'\xfe', n)
     else:
-        return struct.pack('<cQ', '\xff', n)
+        return struct.pack('<cQ', b'\xff', n)
 
 # Takes and returns byte string value, not hex string
 def varstr(s):
     return varint(len(s)) + s
+    #return varint(len(s)) + s.encode('utf-8')
 
 # 60002
 def netaddr(ipaddr, port):
@@ -91,7 +93,7 @@ def countLeadingChars(s, ch):
 
 # https://en.bitcoin.it/wiki/Base58Check_encoding
 def base58CheckEncode(version, payload):
-    payloadb = payload.encode("utf-8")
+    #payloadb = payload.encode("utf-8")
     payloadb = codecs.decode(bytes(payload, 'utf-8'),'hex')
     #payloadb = binascii.hexlify( payload.encode("utf-8") )
     versionb = bytes([version])
@@ -107,7 +109,7 @@ def base58CheckEncode(version, payload):
 def base58CheckDecode(s):
     leadingOnes = countLeadingChars(s, '1')
     s = base256encode(base58decode(s))
-    print('s',s)
+    #print('s',s)
     result = '\0' * leadingOnes +binascii.hexlify( s[:-4] ).decode()
     chk = binascii.hexlify( s[-4:] ).decode()
     #print('chk',chk)
@@ -150,8 +152,8 @@ class TestUtils(unittest.TestCase):
             0x800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D)
 
     def test_base58check(self):
-        self.assertEqual(base58CheckDecode(base58CheckEncode(42, 'abcd')), 'aabcd')
-        self.assertEqual(base58CheckDecode(base58CheckEncode(0, '\0\0abcd')), '\0\0abcd')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(0x2a, 'abcd')), 'aabcd')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(0x00, '\0\0abcd')), '\0\0abcd')
         s = base256encode(0x0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D)
         b = base58CheckEncode(0x80, s)
         self.assertEqual(b, "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")

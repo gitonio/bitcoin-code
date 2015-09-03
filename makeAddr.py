@@ -101,7 +101,7 @@ chk = s[-4:]
 checksum = hashlib.sha256(hashlib.sha256(result.encode('utf-8')).digest()).hexdigest()[0:8]
 print('3 - Drop the last 4 checksum bytes from the byte string')
 print('   ',result[1:-4].upper())
-
+print('   ',keyUtils.wifToPrivateKey(wif))
 
 print('****************************************')
 print('***** WIF checksum       ***************')

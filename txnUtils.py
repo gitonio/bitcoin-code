@@ -11,27 +11,35 @@ import keyUtils
 # Makes a transaction from the inputs
 # outputs is a list of [redemptionSatoshis, outputScript]
 def makeRawTransaction(outputTransactionHash, sourceIndex, scriptSig, outputs):
-    print(outputTransactionHash)
     def makeOutput(data):
         redemptionSatoshis, outputScript = data
         #return (struct.pack("<Q", redemptionSatoshis).encode('hex') +
         #'%02x' % len(outputScript.decode('hex')) + outputScript)
+        print('xxxxxxxxxx')
         return (codecs.encode(struct.pack("<Q", redemptionSatoshis),'hex').decode() +
         '%02x' % len(codecs.decode(outputScript.encode('utf-8'),'hex')) + outputScript)
     formattedOutputs = ''.join(map(makeOutput, outputs))
+    print('xoth:',outputTransactionHash)
+    print('xfo: ',formattedOutputs)
+    print('xsi', sourceIndex)
+    print('xss:', scriptSig)
+    print('xoutputs', outputs)
+    print('calc ', ('%02x' % len(codecs.decode(scriptSig.encode('utf-8'),'hex'))).encode('utf-8'))
+    print('ssd ', codecs.decode(scriptSig.encode('utf-8'),'hex'))
+    print('len',len(codecs.decode(scriptSig.encode('utf-8'),'hex'))) 
     return (
-        "01000000" + # 4 bytes version
-        "01" + # varint for number of inputs
+        b"01000000" + # 4 bytes version
+        b"01" + # varint for number of inputs
 #        outputTransactionHash.decode('hex')[::-1].encode('hex') + # reverse outputTransactionHash
-        codecs.encode(codecs.decode(outputTransactionHash.encode('utf-8'),'hex')[::-1],'hex').decode() + # reverse outputTransactionHash
+        codecs.encode(codecs.decode(outputTransactionHash.encode('utf-8'),'hex')[::-1],'hex') + # reverse outputTransactionHash
 #        struct.pack('<L', sourceIndex).encode('hex') +
-        codecs.encode(struct.pack('<L', sourceIndex),'hex').decode() +
+        codecs.encode(struct.pack('<L', sourceIndex),'hex') +
 #        '%02x' % len(scriptSig.decode('hex')) + scriptSig +
-        '%02x' % len(codecs.decode(scriptSig.encode('utf-8'),'hex')) + scriptSig +
-        "ffffffff" + # sequence
-        "%02x" % len(outputs) + # number of outputs
-        formattedOutputs +
-        "00000000" # lockTime
+        ('%02x' % len(codecs.decode(scriptSig.encode('utf-8'),'hex'))).encode('utf-8') + scriptSig.encode('utf-8') +
+        b"ffffffff" + # sequence
+        ("%02x" % len(outputs)).encode('utf-8') + # number of outputs
+        formattedOutputs.encode('utf-8') +
+        b"00000000" # lockTime
         )
 
 # Returns [first, sig, pub, rest]
@@ -39,6 +47,7 @@ def parseTxn(txn):
     first = txn[0:41*2]
     scriptLen = int(txn[41*2:42*2], 16)
     script = txn[42*2:42*2+2*scriptLen]
+    print('script', script)
     sigLen = int(script[0:2], 16)
     sig = script[2:2+sigLen*2]
     pubLen = int(script[2+sigLen*2:2+sigLen*2+2], 16)
@@ -53,33 +62,39 @@ def parseTxn(txn):
 def getSignableTxn(parsed):
     first, sig, pub, rest = parsed
     inputAddr = utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub))
-    return first + "1976a914" + inputAddr.encode('hex') + "88ac" + rest + "01000000"
-
+    #return first + "1976a914" + inputAddr.encode('hex') + "88ac" + rest + "01000000"
+    return first.encode('utf-8') + b"1976a914" + inputAddr.encode('utf-8') + b"88ac" + rest.encode('utf-8') + b"01000000"
 # Verifies that a transaction is properly signed, assuming the generated scriptPubKey matches
 # the one in the previous transaction's output
 def verifyTxnSignature(txn):                    
     parsed = parseTxn(txn)      
     signableTxn = getSignableTxn(parsed)
-    hashToSign = hashlib.sha256(hashlib.sha256(signableTxn.decode('hex')).digest()).digest().encode('hex')
+    hashToSign = hashlib.sha256(hashlib.sha256(signableTxn).digest()).digest()
     assert(parsed[1][-2:] == '01') # hashtype
     sig = keyUtils.derSigToHexSig(parsed[1][:-2])
     public_key = parsed[2]
-    vk = ecdsa.VerifyingKey.from_string(public_key[2:].decode('hex'), curve=ecdsa.SECP256k1)
-    assert(vk.verify_digest(sig.decode('hex'), hashToSign.decode('hex')))
+    print('public_key', public_key)
+    vk = ecdsa.VerifyingKey.from_string(codecs.decode(public_key[2:].encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
+    assert(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign.decode('hex')))
 
 def makeSignedTransaction(privateKey, outputTransactionHash, sourceIndex, scriptPubKey, outputs):
     myTxn_forSig = (makeRawTransaction(outputTransactionHash, sourceIndex, scriptPubKey, outputs)
-         + "01000000") # hash code
-    myTxn_forSig = codecs.decode(myTxn_forSig.encode('utf-8'),'hex')
-    s256 = hashlib.sha256(hashlib.sha256(myTxn_forSig).digest()).digest()
+         + b"01000000") # hash code
+    #myTxn_forSig = codecs.decode(myTxn_forSig.encode('utf-8'),'hex')
+    print('myTxn_forSig :', myTxn_forSig)
+    s256 =        hashlib.sha256(hashlib.sha256( codecs.decode(myTxn_forSig,'hex') ).digest()).digest()
+    print('s256:',hashlib.sha256(hashlib.sha256( codecs.decode(myTxn_forSig,'hex') ).digest()).hexdigest())
     print('pk',privateKey)
-    privateKey = codecs.decode(privateKey.encode('utf-8'),'hex')
-    sk = ecdsa.SigningKey.from_string(privateKey, curve=ecdsa.SECP256k1)
-    sig = sk.sign_digest(s256, sigencode=ecdsa.util.sigencode_der) + '\01' # 01 is hashtype
+    sk = ecdsa.SigningKey.from_string(codecs.decode(privateKey.encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
+    sig = sk.sign_digest(s256, sigencode=ecdsa.util.sigencode_der) + b'\x01' # 01 is hashtype
+    print('sig ',sig)
     pubKey = keyUtils.privateKeyToPublicKey(privateKey)
-    scriptSig = utils.varstr(sig).encode('hex') + utils.varstr(pubKey.decode('hex')).encode('hex')
+    #scriptSig = utils.varstr(sig).encode('hex') + utils.varstr(pubKey.decode('hex')).encode('hex')
+    scriptSig = codecs.encode(utils.varstr(sig),'hex').decode() + codecs.encode(utils.varstr(pubKey),'hex').decode()
+    print('sript sig ', scriptSig)
     signed_txn = makeRawTransaction(outputTransactionHash, sourceIndex, scriptSig, outputs)
-    verifyTxnSignature(signed_txn)
+    print('signed_txn  ', signed_txn.decode())
+    verifyTxnSignature(signed_txn.decode())
     return signed_txn
     
 class TestTxnUtils(unittest.TestCase):
