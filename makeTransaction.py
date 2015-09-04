@@ -31,8 +31,9 @@ signed_txn = txnUtils.makeSignedTransaction(privateKey,
         keyUtils.addrHashToScriptPubKey("1KKKK6N21XKo48zWKuQKXdvSsCf95ibHFa")]]
         )
     
-txnUtils.verifyTxnSignature(signed_txn)
 print ('SIGNED TXN', signed_txn)
+txnUtils.verifyTxnSignature(signed_txn.decode())
+print ('SIGNED TXN', signed_txn.decode())
 
 
 
