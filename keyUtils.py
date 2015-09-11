@@ -17,7 +17,7 @@ def privateKeyToWif(key_hex):
 
 def wifToPrivateKey(s):
     b = utils.base58CheckDecode(s)
-    return b[1:]
+    return b[0:]
 
 # Input is a hex-encoded, DER-encoded signature
 # Output is a 64-byte hex-encoded signature
@@ -44,7 +44,8 @@ def privateKeyToPublicKey(s):
 
 # Input is hex string
 def keyToAddr(s):
-    return pubKeyToAddr(privateKeyToPublicKey(s))
+    #return pubKeyToAddr(privateKeyToPublicKey(s))
+    return pubKeyToAddr(codecs.encode(privateKeyToPublicKey(s),'hex').decode())
 
 def pubKeyToAddr(s):
     ripemd160 = hashlib.new('ripemd160')
@@ -68,7 +69,7 @@ class TestKey(unittest.TestCase):
 
     def test_WifToPrivateKey(self):
         k = wifToPrivateKey("5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")
-        self.assertEqual(k.upper(), "0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D")
+        self.assertEqual(codecs.encode(k,'hex').decode().upper(), "0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D")
 
     def test_keyToAddr(self):
         a = keyToAddr("18E14A7B6A307F426A94F8114701E7C8E774E7F9A47E2C2035DB29A206321725")
@@ -78,12 +79,14 @@ class TestKey(unittest.TestCase):
         #blockchain.info
         wallet_addr = "1EyBEhrriJeghX4iqATQEWDq38Ae8ubBJe"
         wallet_private = "8tnArBrrp4KHVjv8WA6HiX4ev56WDhqGA16XJCHJzhNH"
-        wallet_key = utils.base256encode(utils.base58decode(wallet_private)).encode('hex')
+        wallet_key = utils.base256encode(utils.base58decode(wallet_private))
+        wallet_key = codecs.encode(wallet_key,'hex').decode()
         self.assertEqual(keyToAddr(wallet_key), wallet_addr)
 
         # can import into multibit
         bitcoin_qt = "5Jhw8B9J9QLaMmcBRfz7x8KkD9gwbNoyBMfWyANqiDwm3FFwgGC"
-        wallet_key = utils.base58CheckDecode(bitcoin_qt).encode('hex')
+        wallet_key = utils.base58CheckDecode(bitcoin_qt)
+        wallet_key = codecs.encode(wallet_key,'hex').decode()
         self.assertEqual(keyToAddr(wallet_key), wallet_addr)
 
         wallet_key = "754580de93eea21579441b58e0c9b09f54f6005fc71135f5cfac027394b22caa"
@@ -101,13 +104,17 @@ class TestKey(unittest.TestCase):
         # http://bitaddress.org
         wallet_private = "5J8PhneLEaL9qEPvW5voRgrELeXcmM12B6FbiA9wZAwDMnJMb2L"
         wallet_addr = "1Q2SuNLDXDtda7DPnBTocQWtUg1v4xZMrV"
-        self.assertEqual(keyToAddr(utils.base58CheckDecode(wallet_private).encode('hex')), wallet_addr)
+        wallet_private = codecs.encode(utils.base58CheckDecode(wallet_private),'hex').decode()
+        #self.assertEqual(keyToAddr(utils.base58CheckDecode(wallet_private).encode('hex')), wallet_addr)
+        self.assertEqual(keyToAddr(wallet_private), wallet_addr)
         
     def test_der(self):
-        self.assertEqual(ecdsa.der.encode_sequence(
+        der = ecdsa.der.encode_sequence(
             ecdsa.der.encode_integer(0x123456),
-            ecdsa.der.encode_integer(0x89abcd)),
-                         b"300b020312345602040089abcd")
+            ecdsa.der.encode_integer(0x89abcd))
+        der = codecs.encode(der,'hex').decode()
+        self.assertEqual(der,
+                         "300b020312345602040089abcd")
     def test_derSigToHexSig(self):
         derSig = "304502204c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093022100faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"
         self.assertEqual("4c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae",
