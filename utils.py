@@ -30,7 +30,8 @@ def netaddr(ipaddr, port):
                        struct.pack('>4sH', ipaddr, port))
 # return value, len
 def processVarInt(payload):
-    n0 = ord(payload[0])
+    #n0 = ord(payload[0])
+    n0=payload[0]
     if n0 < 0xfd:
         return [n0, 1]
     elif n0 == 0xfd:
@@ -48,8 +49,12 @@ def processVarStr(payload):
 # takes 26 byte input, returns string  
 def processAddr(payload):
     assert(len(payload) >= 26)
-    return '%d.%d.%d.%d:%d' % (ord(payload[20]), ord(payload[21]),
-                               ord(payload[22]), ord(payload[23]),
+    #payload = payload.encode('utf-8')
+    #return '%d.%d.%d.%d:%d' % (ord(payload[20]), ord(payload[21]),
+    #                           ord(payload[22]), ord(payload[23]),
+    #                           struct.unpack('!H', payload[24:26])[0])
+    return '%d.%d.%d.%d:%d' % ((payload[20]), (payload[21]),
+                               (payload[22]), (payload[23]),
                                struct.unpack('!H', payload[24:26])[0])
 
 
@@ -73,10 +78,12 @@ def base256encode(n):
         #result = chr(n % 256) + result
         result = bytes((n % 256,)) + result
         n //= 256
+    #result = codecs.encode(result,'hex').decode()
     return result
 
 def base256decode(s):
     result = 0
+#    for c in s.encode('utf-8'):
     for c in s:
         #result = result * 256 + ord(c)
         result = result * 256 +    c
@@ -93,25 +100,19 @@ def countLeadingChars(s, ch):
 
 # https://en.bitcoin.it/wiki/Base58Check_encoding
 def base58CheckEncode(version, payload):
-    #payloadb = payload.encode("utf-8")
-    payloadb = codecs.decode(bytes(payload, 'utf-8'),'hex')
-    #payloadb = binascii.hexlify( payload.encode("utf-8") )
-    versionb = bytes([version])
-    s = versionb + payloadb
-    checksumb = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
-    checksum = hashlib.sha256(hashlib.sha256(s).digest()).hexdigest()[0:4]
-    result = chr(version) + payload + checksum
-    resultb = s + checksumb
-    #resultb = codecs.encode(resultb,'hex')
-    leadingZeros = countLeadingChars(result, '\0')
-    return '1' * leadingZeros + base58encode(base256decode(resultb))
+    #s = chr(version) + payload
+    s = bytes((version,)) + payload
+    checksum = hashlib.sha256(hashlib.sha256(s).digest()).digest()[0:4]
+    result = s + checksum
+    leadingZeros = countLeadingChars(result, 0)
+    return '1' * leadingZeros + base58encode(base256decode(result))
 
 def base58CheckDecode(s):
     leadingOnes = countLeadingChars(s, '1')
     s = base256encode(base58decode(s))
     #print('s',s)
-    result = '\0' * leadingOnes +binascii.hexlify( s[:-4] ).decode()
-    chk = binascii.hexlify( s[-4:] ).decode()
+    result = b'\0' * leadingOnes + s[:-4]
+    chk = s[-4:] 
     #print('chk',chk)
     #checksum = hashlib.sha256(hashlib.sha256( codecs.decode(result.encode('utf-8'),'hex') ).digest()).hexdigest()[0:8]
     #print('checksum',checksum)
@@ -121,18 +122,19 @@ def base58CheckDecode(s):
 
 class TestUtils(unittest.TestCase):
     def test_varint(self):
-        self.assertEqual(varint(0x42), '\x42')
-        self.assertEqual(varint(0x123), '\xfd\x23\x01')
-        self.assertEqual(varint(0x12345678), '\xfe\x78\x56\x34\x12')
+        self.assertEqual(varint(0x42), b'\x42')
+        self.assertEqual(varint(0x123), b'\xfd\x23\x01')
+        self.assertEqual(varint(0x12345678), b'\xfe\x78\x56\x34\x12')
         self.assertEqual(processVarInt(varint(0x42)), [0x42, 1])
         self.assertEqual(processVarInt(varint(0x1234)), [0x1234, 3])
 
     def test_varstr(self):
-        self.assertEqual(varstr('abc'), '\x03abc')
-        self.assertEqual(processVarStr('\x03abc'), ['abc', 4])
+        self.assertEqual(varstr(b'abc'), b'\x03abc')
+        self.assertEqual(processVarStr(b'\x03abc'), [b'abc', 4])
 
     def test_processAddr(self):
-        self.assertEqual(processAddr('x'*20 + '\x62\x91\x98\x16\x20\x8d'),
+        #self.assertEqual(processAddr('x'*20 + '\x62\x91\x98\x16\x20\x8d'),
+        self.assertEqual(processAddr(b'xxxxxxxxxxxxxxxxxxxxb\x91\x98\x16 \x8d'),
                          '98.145.152.22:8333')
 
     def test_countLeadingCharacters(self):
@@ -152,8 +154,8 @@ class TestUtils(unittest.TestCase):
             0x800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D)
 
     def test_base58check(self):
-        self.assertEqual(base58CheckDecode(base58CheckEncode(42, 'abc')), 'abc')
-        self.assertEqual(base58CheckDecode(base58CheckEncode(0, '\0\0abcd')), '\0\0abcd')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(42, b'abc')), b'abc')
+        self.assertEqual(base58CheckDecode(base58CheckEncode(0, b'\0\0abcd')), b'\0\0abcd')
         s = base256encode(0x0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D)
         b = base58CheckEncode(0x80, s)
         self.assertEqual(b, "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")

@@ -78,7 +78,7 @@ resultstr = codecs.encode(result,'hex').decode().upper()
 print('9 - Base58 encoding of 8')
 leadingZeros = utils.countLeadingChars(result, 0)
 print ( '   ', '1' * leadingZeros + utils.base58encode(utils.base256decode( result )))
-print ('   Addr: ' , keyUtils.keyToAddr(private_key))
+print ('   Addr: ' , keyUtils.pubKeyToAddr(codecs.encode(keyUtils.privateKeyToPublicKey(private_key),'hex').decode()))
 
 
 print('****************************************')
