@@ -2,9 +2,14 @@ import utils,codecs, struct,hashlib, base58,keyUtils, binascii, ecdsa
 
 
 private_key = '18E14A7B6A307F426A94F8114701E7C8E774E7F9A47E2C2035DB29A206321725'
+ 
+print(keyUtils.privateKeyToPublicKey(private_key))
+x=keyUtils.privateKeyToPublicKey(private_key)
+print(codecs.encode(x,'hex').decode())
+keyUtils.pubKeyToAddr(codecs.encode(x,'hex').decode())
 
 
-print(utils.processAddr(b'xxxxxxxxxxxxxxxxxxxxb\x91\x98\x16 \x8d'))
+#print(utils.processAddr(b'xxxxxxxxxxxxxxxxxxxxb\x91\x98\x16 \x8d'))
 
 #print(utils.varint(0x42))
 #print(utils.processVarInt(utils.varint(0x42)))

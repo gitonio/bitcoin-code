@@ -50,7 +50,7 @@ def pubKeyToAddr(s):
     ripemd160 = hashlib.new('ripemd160')
     ripemd160.update(  hashlib.sha256(codecs.decode(s.encode('utf-8'),'hex')).digest())
     #ripemd160.update(hashlib.sha256(s).digest())
-    return utils.base58CheckEncode(0, ripemd160.hexdigest())    
+    return utils.base58CheckEncode(0, ripemd160.digest())    
     #return utils.base58CheckEncode(b'\0', ripemd160.digest())
 
 def addrHashToScriptPubKey(b58str):
