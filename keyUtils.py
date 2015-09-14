@@ -134,12 +134,12 @@ class TestKey(unittest.TestCase):
                         "1976a914348514b329fda7bd33c7b2336cf7cd1fc9544c0588ac00000000" +
                         "01000000")
         public_key =    "04392b964e911955ed50e4e368a9476bc3f9dcc134280e15636430eb91145dab739f0d68b82cf33003379d885a0b212ac95e9cddfd2d391807934d25995468bc55"
-        hashToSign = hashlib.sha256(hashlib.sha256(myTxn_forSig.decode('hex')).digest()).digest().encode('hex')
+        hashToSign = hashlib.sha256(hashlib.sha256(codecs.decode(myTxn_forSig.encode('utf-8'),'hex')).digest()).digest()
         sig_der =       "304402202c2e1a746c556546f2c959e92f2d0bd2678274823cc55e11628284e4a13016f80220797e716835f9dbcddb752cd0115a970a022ea6f2d8edafff6e087f928e41baac01"[:-2]
         sig = derSigToHexSig(sig_der)
 
-        vk = ecdsa.VerifyingKey.from_string(public_key[2:].decode('hex'), curve=ecdsa.SECP256k1)
-        self.assertEquals(vk.verify_digest(sig.decode('hex'), hashToSign.decode('hex')), True)
+        vk = ecdsa.VerifyingKey.from_string(codecs.decode(public_key[2:].encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
+        self.assertEquals(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign), True)
         #OP_DUP OP_HASH160 167c74f7491fe552ce9e1912810a984355b8ee07 OP_EQUALVERIFY OP_CHECKSIG
 
 if __name__ == '__main__':
