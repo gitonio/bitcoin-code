@@ -6,7 +6,7 @@ import socket
 import unittest
 import sys
 import utils
-
+import codecs
     
 #https://en.bitcoin.it/wiki/Protocol_specification#version
 magic = 0xd9b4bef9
@@ -37,8 +37,9 @@ def processChunk(header, payload):
         result = []
         for i in range(0, count):
             type, hash = struct.unpack('<L32s', payload[offset:offset+36])
+            print (hash)
             # Note: hash is reversed
-            print( type, hash[::-1])
+            print( 'type ', type, hash[::-1])
             if type == 2:
                 sys.exit(0)
             result.append([type, hash])
