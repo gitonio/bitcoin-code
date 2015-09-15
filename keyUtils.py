@@ -58,7 +58,8 @@ def addrHashToScriptPubKey(b58str):
     assert(len(b58str) == 34)
     # 76     A9      14 (20 bytes)                                 88             AC
     #return '76a914' + utils.base58CheckDecode(b58str).encode('hex') + '88ac'
-    return '76a914' + utils.base58CheckDecode(b58str)  + '88ac'
+    #return b'76a914' + utils.base58CheckDecode(b58str)  + b'88ac'
+    return b'76a914' + codecs.encode(utils.base58CheckDecode(b58str),'hex')  + b'88ac'
 
     
 class TestKey(unittest.TestCase):

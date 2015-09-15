@@ -1,4 +1,26 @@
-import utils,codecs, struct,hashlib, base58,keyUtils, binascii, ecdsa
+import utils,codecs, struct,hashlib, base58,keyUtils, binascii, ecdsa, txnUtils
+
+print( codecs.encode(keyUtils.wifToPrivateKey("5Kb6aGpijtrb8X28GzmWtbcGZCG8jHQWFJcWugqo3MwKRvC8zyu"),'hex').decode())
+print( keyUtils.addrHashToScriptPubKey("15nhZbXnLMknZACbb3Jrf1wPCD9DWAcqd7").decode() )
+print( codecs.encode(keyUtils.addrHashToScriptPubKey("15nhZbXnLMknZACbb3Jrf1wPCD9DWAcqd7"),'hex').decode() )
+
+
+txn = txnUtils.makeRawTransaction(
+"f2b3eb2deb76566e7324307cd47c35eeb88413f971d88519859b1834307ecfec", # output transaction hash
+1, # sourceIndex
+"76a914010966776006953d5567439e5e39f86a0d273bee88ac", # scriptSig
+[[99900000, #satoshis
+"76a914097072524438d003d23a2f23edb65aae1bb3e46988ac"]], # outputScript
+) + b"01000000" # hash code type
+
+print(txn.decode())
+print(txn.decode()==            "0100000001eccf7e3034189b851985d871f91384b8ee357cd47c3024736e5676eb2debb3f2" +
+            "010000001976a914010966776006953d5567439e5e39f86a0d273bee88acffffffff" +
+            "01605af405000000001976a914097072524438d003d23a2f23edb65aae1bb3e46988ac" +
+            "0000000001000000"
+)
+
+
 
 derSig = "304502204c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093022100faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"
 "4c01fee2d724fb2e34930c658f585d49be2f6ac87c126506c0179e6977716093faad0afd3ae536cfe11f83afaba9a8914fc0e70d4c6d1495333b2fb3df6e8cae"== keyUtils.derSigToHexSig(derSig)
