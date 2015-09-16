@@ -157,7 +157,7 @@ class TestTxnUtils(unittest.TestCase):
             b"01605af405000000001976a914097072524438d003d23a2f23edb65aae1bb3e46988ac" +
             b"0000000001000000")
    
-    def test_makeSignedTransaction(self):
+    def test_makeSignedTransaction(self): 
         # Transaction from
         # https://blockchain.info/tx/901a53e7a3ca96ed0b733c0233aad15f11b0c9e436294aa30c367bf06c3b7be8
         # From 133t to 1KKKK
