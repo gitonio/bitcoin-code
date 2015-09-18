@@ -45,6 +45,7 @@ print('****************************************')
 
 print('0 - Private ECDSA Key')
 private_key = '18E14A7B6A307F426A94F8114701E7C8E774E7F9A47E2C2035DB29A206321725'
+#private_key = '2088D87A142C5A3B4A4225D55B2C226C6132D14A67DFA541D930A73C6063A82E5C'
 print('   ',private_key)
 public_key  = keyUtils.privateKeyToPublicKey(private_key) 
 print('1 - Public ECDSA Key')

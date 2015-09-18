@@ -13,7 +13,7 @@ magic = 0xd9b4bef9
 
 def makeMessage(magic, command, payload):
     checksum = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[0:4]
-    return struct.pack('L12sL4s', magic, command, len(payload), checksum) + payload
+    return struct.pack('L12sL4s', magic, command.encode('utf-8'), len(payload), checksum) + payload
 
 addrCount = 0 
 def processChunk(header, payload):
@@ -73,7 +73,7 @@ def getVersionMsg():
     addr_me = utils.netaddr(socket.inet_aton("127.0.0.1"), 8333)
     addr_you = utils.netaddr(socket.inet_aton("127.0.0.1"), 8333)
     nonce = random.getrandbits(64)
-    sub_version_num = utils.varstr('')
+    sub_version_num = utils.varstr(b'')
     start_height = 0
 
     payload = struct.pack('<LQQ26s26sQsL', version, services, timestamp, addr_me,

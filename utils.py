@@ -26,7 +26,7 @@ def varstr(s):
 # 60002
 def netaddr(ipaddr, port):
     services = 1
-    return (struct.pack('<Q12s', services, '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff') +
+    return (struct.pack('<Q12s', services, b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff') +
                        struct.pack('>4sH', ipaddr, port))
 # return value, len
 def processVarInt(payload):
@@ -109,16 +109,30 @@ def base58CheckEncode(version, payload):
 
 def base58CheckDecode(s):
     leadingOnes = countLeadingChars(s, '1')
+    print(s[0])
+    
+    #Testnet
+    if s[0] in ['K', 'c']:
+        print('compressed')
+        compressed = True
+    #Mainnet    
+    else:
+        compressed = False
+        
+            
     s = base256encode(base58decode(s))
     #print('s',s)
     result = b'\0' * leadingOnes + s[:-4]
     chk = s[-4:] 
     #print('chk',chk)
-    #checksum = hashlib.sha256(hashlib.sha256( codecs.decode(result.encode('utf-8'),'hex') ).digest()).hexdigest()[0:8]
+    checksum = hashlib.sha256(hashlib.sha256( result ).digest()).hexdigest()[0:8]
     #print('checksum',checksum)
     #assert(chk == checksum)
     version = result[0]
-    return result[1:]
+    if compressed:
+        return result[1:-1]
+    else:
+        return result[1:]
 
 class TestUtils(unittest.TestCase):
     def test_varint(self):

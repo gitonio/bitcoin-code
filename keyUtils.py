@@ -1,7 +1,5 @@
 # https://pypi.python.org/pypi/ecdsa/0.10
-import ecdsa
-import ecdsa.der
-import ecdsa.util
+import ecdsa, ecdsa.der
 import hashlib
 import unittest
 import random
@@ -35,23 +33,29 @@ def derSigToHexSig(s):
     return '%064x%064x' % (x, y)
 
 # Input is hex string
-def privateKeyToPublicKey(s):
+def privateKeyToPublicKey(s, net='main'):
     #sk = ecdsa.SigningKey.from_string(s.decode('hex'), curve=ecdsa.SECP256k1)
     sk = ecdsa.SigningKey.from_string(codecs.decode(s.encode("utf-8"), "hex"), curve=ecdsa.SECP256k1)
     vk = sk.verifying_key
+    x, y =  sk.verifying_key.XYto_string()
+    print ('x', codecs.encode(x,'hex').decode(), 'y', codecs.encode(y,'hex').decode(), int(codecs.encode(y,'hex'),16)%2)
     #return ('\04' + sk.verifying_key.to_string()).encode('hex')
     return (b'\04' + sk.verifying_key.to_string())
 
 # Input is hex string
-def keyToAddr(s):
+def keyToAddr(s, net='main'):
     #return pubKeyToAddr(privateKeyToPublicKey(s))
-    return pubKeyToAddr(codecs.encode(privateKeyToPublicKey(s),'hex').decode())
+    return pubKeyToAddr(codecs.encode(privateKeyToPublicKey(s, net),'hex').decode(),net)
 
-def pubKeyToAddr(s):
+def pubKeyToAddr(s, net='main'):
     ripemd160 = hashlib.new('ripemd160')
     ripemd160.update(  hashlib.sha256(codecs.decode(s.encode('utf-8'),'hex')).digest())
     #ripemd160.update(hashlib.sha256(s).digest())
-    return utils.base58CheckEncode(0, ripemd160.digest())    
+    if (net=='main'):
+        return utils.base58CheckEncode(0, ripemd160.digest())
+    else:
+        return utils.base58CheckEncode(111, ripemd160.digest())
+            
     #return utils.base58CheckEncode(b'\0', ripemd160.digest())
 
 def addrHashToScriptPubKey(b58str):
