@@ -9,8 +9,12 @@ import codecs
 import utils
 import binascii
 # https://en.bitcoin.it/wiki/Wallet_import_format
-def privateKeyToWif(key_hex):    
-    return utils.base58CheckEncode(0x80, codecs.decode(key_hex.encode('utf-8'),'hex'))
+def privateKeyToWif(key_hex, net = 'main'):
+    if (net == 'main'):
+        version = 0x80
+    else:
+        version = 0xef    
+    return utils.base58CheckEncode(version, codecs.decode(key_hex.encode('utf-8'),'hex'))
     #return utils.base58CheckEncode(0x80, key_hex)
 
 def wifToPrivateKey(s):
@@ -33,14 +37,21 @@ def derSigToHexSig(s):
     return '%064x%064x' % (x, y)
 
 # Input is hex string
-def privateKeyToPublicKey(s, net='main'):
+def privateKeyToPublicKey(s, net='main', compressed='no'):
     #sk = ecdsa.SigningKey.from_string(s.decode('hex'), curve=ecdsa.SECP256k1)
     sk = ecdsa.SigningKey.from_string(codecs.decode(s.encode("utf-8"), "hex"), curve=ecdsa.SECP256k1)
     vk = sk.verifying_key
     x, y =  sk.verifying_key.XYto_string()
     print ('x', codecs.encode(x,'hex').decode(), 'y', codecs.encode(y,'hex').decode(), int(codecs.encode(y,'hex'),16)%2)
     #return ('\04' + sk.verifying_key.to_string()).encode('hex')
-    return (b'\04' + sk.verifying_key.to_string())
+    if (compressed=='yes'):
+        if (int(codecs.encode(y,'hex'),16)%2 == 0):
+            return(b'\02' + x)
+        else:
+            return(b'\03' + x)
+        
+    else:
+        return (b'\04' + sk.verifying_key.to_string())
 
 # Input is hex string
 def keyToAddr(s, net='main'):

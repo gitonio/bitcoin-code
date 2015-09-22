@@ -13,22 +13,9 @@ import keyUtils
 def makeRawTransaction(outputTransactionHash, sourceIndex, scriptSig, outputs):
     def makeOutput(data):
         redemptionSatoshis, outputScript = data
-        #return (struct.pack("<Q", redemptionSatoshis).encode('hex') +
-        #'%02x' % len(outputScript.decode('hex')) + outputScript)
-        #print(redemptionSatoshis)
-        #print(codecs.encode(struct.pack("<Q", redemptionSatoshis),'hex') +
-        #b'%02x')
-        #print((outputScript))
-        #print (codecs.encode(struct.pack("<Q", redemptionSatoshis),'hex') +
-        #('%02x' % len(outputScript)).encode('utf-8') + outputScript.encode('utf-8'))
-        #print (( len(codecs.decode(outputScript.encode('utf-8'),'hex'))))
         return (codecs.encode(struct.pack("<Q", redemptionSatoshis),'hex') +
         ('%02x' % len(codecs.decode(outputScript.encode('utf-8'),'hex'))).encode('utf-8') + outputScript.encode('utf-8')).decode()
-    #print('oth ',('%02x' % len(codecs.decode(scriptSig.encode('utf-8'),'hex'))))
-    #print(makeOutput(outputs[0]))
     formattedOutputs = ''.join(map(makeOutput, outputs))
-    #print('%02x'%len(outputs))
-    #print('fo ', formattedOutputs)
     return (
         b"01000000" + # 4 bytes version
         b"01" + # varint for number of inputs
@@ -63,21 +50,26 @@ def parseTxn(txn):
 def getSignableTxn(parsed):
     first, sig, pub, rest = parsed
     #inputAddr = utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub.decode()))
-    
+    print('first: ', first, 'sig: ', sig, 'pub: ', pub, 'rest: ', rest)
     inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub)),'hex').decode()
+    print("inputAddr:", inputAddr)
     #print(codecs.encode(inputAddr,'hex').decode())
     #return first + "1976a914" + inputAddr.encode('hex') + "88ac" + rest + "01000000"
     return first.encode('utf-8') + b"1976a914" + inputAddr.encode('utf-8') + b"88ac" + rest.encode('utf-8') + b"01000000"
 # Verifies that a transaction is properly signed, assuming the generated scriptPubKey matches
 # the one in the previous transaction's output
-def verifyTxnSignature(txn):                    
-    parsed = parseTxn(txn)      
+def verifyTxnSignature(txn):        
+    print('txn:', txn)            
+    parsed = parseTxn(txn)     
+    print('parsed: ', parsed) 
     signableTxn = getSignableTxn(parsed)
     hashToSign = hashlib.sha256(hashlib.sha256(codecs.decode(signableTxn,'hex')).digest()).digest()
     assert(parsed[1][-2:] == '01') # hashtype
     sig = keyUtils.derSigToHexSig(parsed[1][:-2])
     public_key = parsed[2]
+    print('public_key: ', public_key)
     vk = ecdsa.VerifyingKey.from_string(codecs.decode(public_key[2:].encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
+    print(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
     assert(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
 
 def makeSignedTransaction(privateKey, outputTransactionHash, sourceIndex, scriptPubKey, outputs):

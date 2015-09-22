@@ -125,9 +125,9 @@ def base58CheckDecode(s):
     result = b'\0' * leadingOnes + s[:-4]
     chk = s[-4:] 
     #print('chk',chk)
-    checksum = hashlib.sha256(hashlib.sha256( result ).digest()).hexdigest()[0:8]
+    checksum = hashlib.sha256(hashlib.sha256( result ).digest()).digest()[0:4]
     #print('checksum',checksum)
-    #assert(chk == checksum)
+    assert(chk == checksum)
     version = result[0]
     if compressed:
         return result[1:-1]
