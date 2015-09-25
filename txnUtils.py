@@ -51,9 +51,10 @@ def getSignableTxn(parsed):
     first, sig, pub, rest = parsed
     #inputAddr = utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub.decode()))
     print('first: ', first, 'sig: ', sig, 'pub: ', pub, 'rest: ', rest)
-    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub,net= 'test')),'hex').decode()
+    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr('03' + pub[2:66],net= 'test')),'hex').decode()
     #inputAddr = codecs.encode(utils.base58CheckDecode('moyDyvi7VeAhZnGEWtvE62PoDdmoRXRRkf'),'hex').decode()
-    print("inputAddr:", keyUtils.pubKeyToAddr(pub,net= 'test'))
+    print('pub: ', pub[2:34])
+    print("inputAddr:", keyUtils.pubKeyToAddr('02' +pub[2:66],net= 'test'))
     print("inputAddr:", inputAddr)
     #inputAddr = 'msZwQEA3dYTXDEUjHgfXkGSkLXpfEpLZEA'
     #print(codecs.encode(inputAddr,'hex').decode())
@@ -89,7 +90,7 @@ def makeSignedTransaction(privateKey, outputTransactionHash, sourceIndex, script
     print('pubKey: ', codecs.encode(pubKey,'hex').decode())
     print('pubKey2: ', codecs.encode(pubKey2,'hex').decode())
     #scriptSig = utils.varstr(sig).encode('hex') + utils.varstr(pubKey.decode('hex')).encode('hex')
-    scriptSig = codecs.encode(utils.varstr(sig),'hex').decode() + codecs.encode(utils.varstr(pubKey),'hex').decode()
+    scriptSig = codecs.encode(utils.varstr(sig),'hex').decode() + codecs.encode(utils.varstr(pubKey2),'hex').decode()
     signed_txn = makeRawTransaction(outputTransactionHash, sourceIndex, scriptSig, outputs)
     verifyTxnSignature(signed_txn.decode())
     return signed_txn.decode()
