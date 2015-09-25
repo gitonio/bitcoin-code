@@ -51,8 +51,11 @@ def getSignableTxn(parsed):
     first, sig, pub, rest = parsed
     #inputAddr = utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub.decode()))
     print('first: ', first, 'sig: ', sig, 'pub: ', pub, 'rest: ', rest)
-    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub)),'hex').decode()
+    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub,net= 'test')),'hex').decode()
+    #inputAddr = codecs.encode(utils.base58CheckDecode('moyDyvi7VeAhZnGEWtvE62PoDdmoRXRRkf'),'hex').decode()
+    print("inputAddr:", keyUtils.pubKeyToAddr(pub,net= 'test'))
     print("inputAddr:", inputAddr)
+    #inputAddr = 'msZwQEA3dYTXDEUjHgfXkGSkLXpfEpLZEA'
     #print(codecs.encode(inputAddr,'hex').decode())
     #return first + "1976a914" + inputAddr.encode('hex') + "88ac" + rest + "01000000"
     return first.encode('utf-8') + b"1976a914" + inputAddr.encode('utf-8') + b"88ac" + rest.encode('utf-8') + b"01000000"
@@ -63,11 +66,13 @@ def verifyTxnSignature(txn):
     parsed = parseTxn(txn)     
     print('parsed: ', parsed) 
     signableTxn = getSignableTxn(parsed)
+    print('SignableTxn:', signableTxn)
     hashToSign = hashlib.sha256(hashlib.sha256(codecs.decode(signableTxn,'hex')).digest()).digest()
     assert(parsed[1][-2:] == '01') # hashtype
     sig = keyUtils.derSigToHexSig(parsed[1][:-2])
     public_key = parsed[2]
     print('public_key: ', public_key)
+    print('sig :', sig.encode('utf-8'))
     vk = ecdsa.VerifyingKey.from_string(codecs.decode(public_key[2:].encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
     print(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
     assert(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
@@ -79,7 +84,10 @@ def makeSignedTransaction(privateKey, outputTransactionHash, sourceIndex, script
     s256 =        hashlib.sha256(hashlib.sha256( codecs.decode(myTxn_forSig,'hex') ).digest()).digest()
     sk = ecdsa.SigningKey.from_string(codecs.decode(privateKey.encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
     sig = sk.sign_digest(s256, sigencode=ecdsa.util.sigencode_der) + b'\x01' # 01 is hashtype
-    pubKey = keyUtils.privateKeyToPublicKey(privateKey)
+    pubKey = keyUtils.privateKeyToPublicKey(privateKey, net='test',compressed ='yes')
+    pubKey2 = keyUtils.privateKeyToPublicKey(privateKey, net='test',compressed ='no')
+    print('pubKey: ', codecs.encode(pubKey,'hex').decode())
+    print('pubKey2: ', codecs.encode(pubKey2,'hex').decode())
     #scriptSig = utils.varstr(sig).encode('hex') + utils.varstr(pubKey.decode('hex')).encode('hex')
     scriptSig = codecs.encode(utils.varstr(sig),'hex').decode() + codecs.encode(utils.varstr(pubKey),'hex').decode()
     signed_txn = makeRawTransaction(outputTransactionHash, sourceIndex, scriptSig, outputs)

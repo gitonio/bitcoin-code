@@ -10,9 +10,9 @@ print('****************************************')
 
 net = 'test'
 compressed='yes'
-#wif = '5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ'
+wif = '5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ'
 wif = "cMeNhXd7qUrAc9LpkCDfXpziQczdVrRdMVsauNTDhU1c4K5cptNk"
-#wif = "KyBsPXxTuVD82av65KZkrGrWi5qLMah5SdNq6uftawDbgKa2wv6S"
+#wif = "5HusYj2b2x4nroApgfvaSfKYZhRbKFH41bVyPooymbC6KfgSXdD"
 #net = 'main'
 #wif = "5JG9hT3beGTJuUAmCQEmNaxAuMacCTfXuw1R3FCXig23RQHMr4K"
 print('1 - Take a Wallet Import Format string')
@@ -33,6 +33,7 @@ private_key = result[1:-4].upper()
 print('   ',result[1:-4].upper())
 private_key = codecs.encode(keyUtils.wifToPrivateKey(wif),'hex').decode()
 print('   ',codecs.encode(keyUtils.wifToPrivateKey(wif),'hex').decode())
+print('   ',codecs.encode(keyUtils.wifToPrivateKey(wif),'hex'))
 
 print('****************************************')
 print('***** WIF checksum       ***************')
