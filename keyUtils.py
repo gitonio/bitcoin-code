@@ -9,12 +9,17 @@ import codecs
 import utils
 import binascii
 # https://en.bitcoin.it/wiki/Wallet_import_format
-def privateKeyToWif(key_hex, net = 'main'):
+def privateKeyToWif(key_hex, net = 'main', compressed='no'):
     if (net == 'main'):
         version = 0x80
     else:
         version = 0xef    
-    return utils.base58CheckEncode(version, codecs.decode(key_hex.encode('utf-8'),'hex'))
+        
+    if (compressed=='yes'):
+        key_hex = key_hex + '01'
+        
+            
+    return utils.base58CheckEncode(version, codecs.decode(key_hex.encode('utf-8'),'hex'), compressed)
     #return utils.base58CheckEncode(0x80, key_hex)
 
 def wifToPrivateKey(s):
@@ -58,14 +63,14 @@ def keyToAddr(s, net='main'):
     #return pubKeyToAddr(privateKeyToPublicKey(s))
     return pubKeyToAddr(codecs.encode(privateKeyToPublicKey(s, net),'hex').decode(),net)
 
-def pubKeyToAddr(s, net='main'):
+def pubKeyToAddr(s, net='main', compressed='no'):
     ripemd160 = hashlib.new('ripemd160')
     ripemd160.update(  hashlib.sha256(codecs.decode(s.encode('utf-8'),'hex')).digest())
     #ripemd160.update(hashlib.sha256(s).digest())
     if (net=='main'):
-        return utils.base58CheckEncode(0, ripemd160.digest())
+        return utils.base58CheckEncode(0, ripemd160.digest(), compressed=compressed)
     else:
-        return utils.base58CheckEncode(111, ripemd160.digest())
+        return utils.base58CheckEncode(111, ripemd160.digest(), compressed=compressed)
             
     #return utils.base58CheckEncode(b'\0', ripemd160.digest())
 

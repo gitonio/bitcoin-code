@@ -51,7 +51,8 @@ def getSignableTxn(parsed):
     first, sig, pub, rest = parsed
     #inputAddr = utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub.decode()))
     print('first: ', first, 'sig: ', sig, 'pub: ', pub, 'rest: ', rest)
-    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr('03' + pub[2:66],net= 'test')),'hex').decode()
+    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr('03' + pub[2:66],net= 'main')),'hex').decode()
+    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub)),'hex').decode()
     #inputAddr = codecs.encode(utils.base58CheckDecode('moyDyvi7VeAhZnGEWtvE62PoDdmoRXRRkf'),'hex').decode()
     print('pub: ', pub[2:34])
     print("inputAddr:", keyUtils.pubKeyToAddr('02' +pub[2:66],net= 'test'))

@@ -8,12 +8,24 @@ print('****************************************')
 print('***** WIF to Private key ***************')
 print('****************************************')
 
+#net = 'main'
+#compressed='no'
+#wif = '5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ'
+
+#net = 'test'
+#compressed='yes'
+#wif = "cQFK8Vqwanamn194EscN3zUMyvPTVc39Dubx5BYccvjXjrwS9mBG"
+
 net = 'test'
 compressed='yes'
-wif = '5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ'
-wif = "cMeNhXd7qUrAc9LpkCDfXpziQczdVrRdMVsauNTDhU1c4K5cptNk"
-#wif = "5HusYj2b2x4nroApgfvaSfKYZhRbKFH41bVyPooymbC6KfgSXdD"
+wif = "cR7UGQyRRJxnXUm3wLrUNWpi4mrRLB6vUQ797KYQrx5UUvPp473y"
+
+#Antonopolous
+#compressed='yes'
+#wif = "KyBsPXxTuVD82av65KZkrGrWi5qLMah5SdNq6uftawDbgKa2wv6S"
 #net = 'main'
+
+#compressed='no'
 #wif = "5JG9hT3beGTJuUAmCQEmNaxAuMacCTfXuw1R3FCXig23RQHMr4K"
 print('1 - Take a Wallet Import Format string')
 print('   ',wif)
@@ -104,7 +116,8 @@ leadingZeros = utils.countLeadingChars(result, '\0')
 print('7 - Convert the result from a byte string into a base58 string using Base58Check encoding. This is the Wallet Import Format')
 #print(utils.base256decode( result ))
 print ('    WIF:', utils.base58encode(utils.base256decode( result )))
-print ('    WIF:', keyUtils.privateKeyToWif( private_key))
+print ('    WIF:', keyUtils.privateKeyToWif( private_key , net=net, compressed='yes'))
+print ('    WIF:', keyUtils.privateKeyToWif( private_key , net=net, compressed='no'))
 
 
 #https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
@@ -152,4 +165,8 @@ resultstr = codecs.encode(result,'hex').decode().upper()
 print('9 - Base58 encoding of 8')
 leadingZeros = utils.countLeadingChars(result, 0)
 print ( '   ', '1' * leadingZeros + utils.base58encode(utils.base256decode( result )))
-print ('   Addr: ' , keyUtils.pubKeyToAddr(codecs.encode(keyUtils.privateKeyToPublicKey(private_key, net = net, compressed=compressed),'hex').decode(), net = net))
+print ('   Addr: ' , keyUtils.pubKeyToAddr(codecs.encode(keyUtils.privateKeyToPublicKey(private_key, net = net, compressed=compressed),'hex').decode(), net = net,compressed=compressed))
+print ('   Addr: ' , keyUtils.pubKeyToAddr(codecs.encode(keyUtils.privateKeyToPublicKey(private_key, net = net, compressed='yes'),'hex').decode(), net = net, compressed='yes'))
+print ('   Addr: ' , keyUtils.pubKeyToAddr(codecs.encode(keyUtils.privateKeyToPublicKey(private_key, net = net, compressed='no'),'hex').decode(), net = net, compressed='no'))
+print ('   Addr: ' , keyUtils.pubKeyToAddr("025c0de3b9c8ab18dd04e3511243ec2952002dbfadc864b9628910169d9b9b00ec", net = net, compressed='yes'))
+print('pubk ',codecs.encode(keyUtils.privateKeyToPublicKey(private_key, net = net, compressed='yes'),'hex').decode())

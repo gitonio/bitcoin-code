@@ -1,5 +1,20 @@
 import utils,codecs, struct,hashlib, base58,keyUtils, binascii, ecdsa, txnUtils
 
+my_list = [0,17, 34, 51, 68,85,102,119,-120,-103,-86,-69,-52,-35,-18,-1]
+digits = "0123456789abcdef"
+for nums in my_list:
+    print(nums, nums&0xff, nums&0xff >>4, (nums&0xff)&0xf, digits[nums&0xff >>4], digits[(nums&0xff)&0xf],0xff >>4, 0xf )
+
+
+
+
+
+
+
+
+
+
+
 keyUtils.addrHashToScriptPubKey("mwAnSj8gvAkDHbW5wTN67DRQETdmTVDdHz").decode()
 keyUtils.addrHashToScriptPubKey("moRsbz4GMe99KFSzq8XsSfkS2gmPfQ3GpC").decode()
 k=keyUtils.wifToPrivateKey("5J3mBbAH58CpQ3Y5RNJpUKPE62SQ5tfcvU2JpbnkeyhfsYB1Jcn")
