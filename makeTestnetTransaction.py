@@ -14,10 +14,10 @@ signed_txn = txnUtils.makeSignedTransaction(privateKey,
         keyUtils.addrHashToScriptPubKey("muwc2rRij1XuJZ5JqsevtjCvqMw9CenJfK", net='test', compressed='yes').decode(),
         #keyUtils.addrHashToScriptPubKey("mpCWzuKvmqHSoyPo3BQzsaSSp3hqqZEfic", net='test', compressed='no').decode(), #Source of funds
         [[100000, #satoshis
-        #keyUtils.addrHashToScriptPubKey("n22NLZeQMATUChs2BDPrKC8RJbgHTewjm7", net='test', compressed='yes').decode()]],net='test', #Destination of funds
-        keyUtils.addrHashToScriptPubKey("mtv5Zge8zK8r3UCb1ZVC5P3JkDccJEEB21", net='test', compressed='no').decode()]],net='test',
-        compressed='no'
+        keyUtils.addrHashToScriptPubKey("n22NLZeQMATUChs2BDPrKC8RJbgHTewjm7", net='test', compressed='yes').decode()]],net='test', #Destination of funds
+        #keyUtils.addrHashToScriptPubKey("mtv5Zge8zK8r3UCb1ZVC5P3JkDccJEEB21", net='test', compressed='no').decode()]],net='test',
+        compressed='yes'
         )
     
-txnUtils.verifyTxnSignature(signed_txn)
+#txnUtils.verifyTxnSignature(signed_txn)
 print ('SIGNED TXN', signed_txn)
