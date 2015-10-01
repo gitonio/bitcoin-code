@@ -118,7 +118,7 @@ def base58CheckDecode(s):
     
     #Testnet
     if s[0] in ['K', 'c']:
-        print('compressed')
+        #print('compressed')
         compressed = True
     #Mainnet    
     else:

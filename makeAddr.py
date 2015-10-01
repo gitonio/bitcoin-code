@@ -12,13 +12,13 @@ print('****************************************')
 #compressed='no'
 #wif = '5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ'
 
-#net = 'test'
-#compressed='yes'
-#wif = "cQFK8Vqwanamn194EscN3zUMyvPTVc39Dubx5BYccvjXjrwS9mBG"
-
 net = 'test'
 compressed='yes'
-wif = "cR7UGQyRRJxnXUm3wLrUNWpi4mrRLB6vUQ797KYQrx5UUvPp473y"
+wif = "cQFK8Vqwanamn194EscN3zUMyvPTVc39Dubx5BYccvjXjrwS9mBG"
+
+#net = 'test'
+#compressed='yes'
+#wif = "cR7UGQyRRJxnXUm3wLrUNWpi4mrRLB6vUQ797KYQrx5UUvPp473y"
 
 #Antonopolous
 #compressed='yes'

@@ -9,8 +9,9 @@ import utils
 import codecs
     
 #https://en.bitcoin.it/wiki/Protocol_specification#version
-magic = 0xd9b4bef9
+#magic = 0xd9b4bef9
 
+magic =  0xDAB5BFFA
 def makeMessage(magic, command, payload):
     checksum = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[0:4]
     return struct.pack('L12sL4s', magic, command.encode('utf-8'), len(payload), checksum) + payload
@@ -70,8 +71,10 @@ def getVersionMsg():
     version = 60002
     services = 1
     timestamp = int(time.time())
-    addr_me = utils.netaddr(socket.inet_aton("127.0.0.1"), 8333)
-    addr_you = utils.netaddr(socket.inet_aton("127.0.0.1"), 8333)
+    #addr_me = utils.netaddr(socket.inet_aton("127.0.0.1"), 8333)
+    #addr_you = utils.netaddr(socket.inet_aton("127.0.0.1"), 8333)
+    addr_me = utils.netaddr(socket.inet_aton("127.0.0.1"), 19000)
+    addr_you = utils.netaddr(socket.inet_aton("127.0.0.1"), 19001)
     nonce = random.getrandbits(64)
     sub_version_num = utils.varstr(b'')
     start_height = 0

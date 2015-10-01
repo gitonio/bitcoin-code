@@ -47,15 +47,23 @@ def parseTxn(txn):
 
 # Substitutes the scriptPubKey into the transaction, appends SIGN_ALL to make the version
 # of the transaction that can be signed
-def getSignableTxn(parsed):
+def getSignableTxn(parsed, compressed='no'):
     first, sig, pub, rest = parsed
     #inputAddr = utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub.decode()))
     print('first: ', first, 'sig: ', sig, 'pub: ', pub, 'rest: ', rest)
-    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr('03' + pub[2:66],net= 'main')),'hex').decode()
+    #if (compressed=='yes'):
+    #    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr('03' +  pub[2:66],net= 'test', compressed='yes')),'hex').decode()
+    #    print('pubk  ','03' +  pub[2:66] )
+    #else:
+    #    inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub)),'hex').decode()
     inputAddr = codecs.encode(utils.base58CheckDecode(keyUtils.pubKeyToAddr(pub)),'hex').decode()
+    
     #inputAddr = codecs.encode(utils.base58CheckDecode('moyDyvi7VeAhZnGEWtvE62PoDdmoRXRRkf'),'hex').decode()
-    print('pub: ', pub[2:34])
+    print('pub uncompressed: ', keyUtils.pubKeyToAddr(pub,net='test'))
+    print('pub   compressed: ', keyUtils.pubKeyToAddr('03' + pub[2:66],net='test'))
     print("inputAddr:", keyUtils.pubKeyToAddr('02' +pub[2:66],net= 'test'))
+    print('a:', codecs.encode(utils.base58CheckDecode('1MMMMSUb1piy2ufrSguNUdFmAcvqrQF8M5'),'hex').decode())
+    print('b:', codecs.encode(utils.base58CheckDecode('muwc2rRij1XuJZ5JqsevtjCvqMw9CenJfK'),'hex').decode())
     print("inputAddr:", inputAddr)
     #inputAddr = 'msZwQEA3dYTXDEUjHgfXkGSkLXpfEpLZEA'
     #print(codecs.encode(inputAddr,'hex').decode())
@@ -63,37 +71,41 @@ def getSignableTxn(parsed):
     return first.encode('utf-8') + b"1976a914" + inputAddr.encode('utf-8') + b"88ac" + rest.encode('utf-8') + b"01000000"
 # Verifies that a transaction is properly signed, assuming the generated scriptPubKey matches
 # the one in the previous transaction's output
-def verifyTxnSignature(txn):        
+def verifyTxnSignature(txn, compressed='no'):        
     print('txn:', txn)            
     parsed = parseTxn(txn)     
     print('parsed: ', parsed) 
-    signableTxn = getSignableTxn(parsed)
+    signableTxn = getSignableTxn(parsed, compressed=compressed)
     print('SignableTxn:', signableTxn)
     hashToSign = hashlib.sha256(hashlib.sha256(codecs.decode(signableTxn,'hex')).digest()).digest()
     assert(parsed[1][-2:] == '01') # hashtype
     sig = keyUtils.derSigToHexSig(parsed[1][:-2])
     public_key = parsed[2]
+    public_key = '041906010cdc4cfafc11a4588fe26197c979bd31f76e19d9f4b91b5660838ac9ace66a93e5f8aed4354e54dfed61d4b0da0e6ebf8b314ed0bf99e663fb0af3c5a3'
     print('public_key: ', public_key)
     print('sig :', sig.encode('utf-8'))
     vk = ecdsa.VerifyingKey.from_string(codecs.decode(public_key[2:].encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
-    print(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
+    #print(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
     assert(vk.verify_digest(codecs.decode(sig.encode('utf-8'),'hex'), hashToSign ))
 
-def makeSignedTransaction(privateKey, outputTransactionHash, sourceIndex, scriptPubKey, outputs):
+def makeSignedTransaction( privateKey, outputTransactionHash, sourceIndex, scriptPubKey, outputs, net='main', compressed='no'):
+        #Testnet
+    
+
     myTxn_forSig = (makeRawTransaction(outputTransactionHash, sourceIndex, scriptPubKey, outputs)
          + b"01000000") # hash code
     #myTxn_forSig = codecs.decode(myTxn_forSig.encode('utf-8'),'hex')
     s256 =        hashlib.sha256(hashlib.sha256( codecs.decode(myTxn_forSig,'hex') ).digest()).digest()
     sk = ecdsa.SigningKey.from_string(codecs.decode(privateKey.encode('utf-8'),'hex'), curve=ecdsa.SECP256k1)
     sig = sk.sign_digest(s256, sigencode=ecdsa.util.sigencode_der) + b'\x01' # 01 is hashtype
-    pubKey = keyUtils.privateKeyToPublicKey(privateKey, net='test',compressed ='yes')
-    pubKey2 = keyUtils.privateKeyToPublicKey(privateKey, net='test',compressed ='no')
-    print('pubKey: ', codecs.encode(pubKey,'hex').decode())
+    pubKey =  keyUtils.privateKeyToPublicKey(privateKey, net=net,compressed ='yes')
+    pubKey2 = keyUtils.privateKeyToPublicKey(privateKey, net= net,compressed ='no')
+    print('pubKey : ', codecs.encode(pubKey,'hex').decode())
     print('pubKey2: ', codecs.encode(pubKey2,'hex').decode())
     #scriptSig = utils.varstr(sig).encode('hex') + utils.varstr(pubKey.decode('hex')).encode('hex')
-    scriptSig = codecs.encode(utils.varstr(sig),'hex').decode() + codecs.encode(utils.varstr(pubKey2),'hex').decode()
+    scriptSig = codecs.encode(utils.varstr(sig),'hex').decode() + codecs.encode(utils.varstr(pubKey),'hex').decode()
     signed_txn = makeRawTransaction(outputTransactionHash, sourceIndex, scriptSig, outputs)
-    verifyTxnSignature(signed_txn.decode())
+    verifyTxnSignature(signed_txn.decode(),compressed=compressed)
     return signed_txn.decode()
     
 class TestTxnUtils(unittest.TestCase):

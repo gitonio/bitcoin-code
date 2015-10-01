@@ -74,7 +74,7 @@ def pubKeyToAddr(s, net='main', compressed='no'):
             
     #return utils.base58CheckEncode(b'\0', ripemd160.digest())
 
-def addrHashToScriptPubKey(b58str):
+def addrHashToScriptPubKey(b58str , net='main', compressed='no'):
     assert(len(b58str) == 34)
     # 76     A9      14 (20 bytes)                                 88             AC
     #return '76a914' + utils.base58CheckDecode(b58str).encode('hex') + '88ac'
